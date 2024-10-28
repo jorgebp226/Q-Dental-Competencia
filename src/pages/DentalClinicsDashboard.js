@@ -1,12 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Slider } from '../components/ui/slider';
-import { MapPin, Clock, Star, Users, Globe } from 'lucide-react';
+import { MapPin, Clock, Star, Users } from 'lucide-react';
 import { MapContainer, TileLayer, Circle, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { generateClient } from 'aws-amplify/api';
+import clinics from '../data/clinics.json'; // Importar el JSON localmente
+
 // Arreglar el problema del icono de marcador en React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -37,12 +38,14 @@ const estimateWalkingTime = (distanceKm) => {
 
 const DentalClinicsDashboard = () => {
     const [radius, setRadius] = useState(1);
-    const [clinicsData, setClinicData] = useState([]);
+    const [clinicsData, setClinicData] = useState(clinics); // Inicializar con los datos importados
     const [mapCenter, setMapCenter] = useState([40.4168, -3.7038]); // Coordenadas de Madrid
     const [mapZoom, setMapZoom] = useState(13);
     const [filteredClinics, setFilteredClinics] = useState([]);
     const [selectedFilter, setSelectedFilter] = useState(null); // Estado para saber qué filtro está seleccionado
-    const client = generateClient();
+
+    // Puedes eliminar la línea de generación del cliente de AWS si ya no la necesitas
+    // const client = generateClient();
 
     const qDental = useMemo(() => ({
         title: "Q-Dental",
@@ -51,6 +54,8 @@ const DentalClinicsDashboard = () => {
         totalScore: 4.8
     }), []);
 
+    // Eliminar el useEffect que llamaba a la API
+    /*
     useEffect(() => {
         const fetchClinics = async () => {
             try {
@@ -65,6 +70,7 @@ const DentalClinicsDashboard = () => {
 
         fetchClinics();
     }, []);
+    */
 
     const clinicsInRadius = useMemo(() => {
         return clinicsData.filter(clinic => {
