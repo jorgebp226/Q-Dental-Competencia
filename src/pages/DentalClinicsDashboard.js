@@ -6,8 +6,7 @@ import { MapContainer, TileLayer, Circle, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { API } from 'aws-amplify'
-
+import { generateClient } from 'aws-amplify/api';
 // Arreglar el problema del icono de marcador en React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,6 +42,7 @@ const DentalClinicsDashboard = () => {
     const [mapZoom, setMapZoom] = useState(13);
     const [filteredClinics, setFilteredClinics] = useState([]);
     const [selectedFilter, setSelectedFilter] = useState(null); // Estado para saber qué filtro está seleccionado
+    const client = generateClient();
 
     const qDental = useMemo(() => ({
         title: "Q-Dental",
@@ -54,13 +54,17 @@ const DentalClinicsDashboard = () => {
     useEffect(() => {
         const fetchClinics = async () => {
             try {
-                const apiData = await API.get('clinicsApi', '/api/clinics');
-                setClinicData(apiData);
+                // Para API REST
+                const response = await client.get({
+                    apiName: 'clinicsApi',
+                    path: '/api/clinics'
+                });
+                setClinicData(response.data);
             } catch (error) {
                 console.error('Error fetching clinic data:', error);
             }
         };
-    
+
         fetchClinics();
     }, []);
 
