@@ -54,12 +54,10 @@ const DentalClinicsDashboard = () => {
     useEffect(() => {
         const fetchClinics = async () => {
             try {
-                // Para API REST
-                const response = await client.get({
-                    apiName: 'clinicsApi',
-                    path: '/api/clinics'
-                });
-                setClinicData(response.data);
+                // Llama a la URL de la API Gateway directamente
+                const response = await fetch('https://prz5rdb9ad.execute-api.eu-west-3.amazonaws.com/q-dental/Clinicas');
+                const data = await response.json();
+                setClinicData(data);
             } catch (error) {
                 console.error('Error fetching clinic data:', error);
             }
